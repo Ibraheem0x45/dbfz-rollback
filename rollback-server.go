@@ -8,21 +8,12 @@ import (
 )
 
 func main() {
-	game_file, err := utils.RunDBFZ()
-
-	if err != nil {
-		log.Printf("Failed to run DBFZ rollback reason: %s\n", err)
-	} else {
-		log.Printf("Launching %s\n", game_file)
-	}
+	go utils.RunDBFZ()
 
 	rollback_proxy := server.New()
-	log.Println("Server started at 8080")
+	log.Println("Server starting at 8080")
 
-	err = rollback_proxy.Run(":8080")
-
-	if err != nil {
+	if err := rollback_proxy.Run(":8080"); err != nil {
 		log.Panicf("Failed to run server reason: %s\n", err)
-		return
 	}
 }

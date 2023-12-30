@@ -1,21 +1,19 @@
 package utils
 
 import (
-	"errors"
+	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
 )
 
-var (
-	ErrGameExecutableNotFound = errors.New("game executable not found")
-)
-
-func RunDBFZ() (string, error) {
+func RunDBFZ() {
 	entries, err := os.ReadDir("./")
 
 	if err != nil {
-		return "", err
+		log.Printf("Failed to read current directory reason: %s\n", err)
+		return
 	}
 
 	game_file := ""
@@ -28,9 +26,15 @@ func RunDBFZ() (string, error) {
 	}
 
 	if len(game_file) <= 0 {
-		return "", ErrGameExecutableNotFound
+		log.Println("Failed to find game executable! Make sure game excutable contains '-eac-nop-loaded'")
+		return
 	}
 
-	command := exec.Command("run", game_file)
-	return game_file, command.Run()
+	command := exec.Command(fmt.Sprintf(`.\%s`, game_file))
+
+	log.Printf("Launching %s\n", game_file)
+
+	if err = command.Run(); err != nil {
+		log.Printf("Failed to launch %s reason: %s\n", game_file, err)
+	}
 }
